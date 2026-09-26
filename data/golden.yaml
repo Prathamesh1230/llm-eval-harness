@@ -1,0 +1,70 @@
+# Golden dataset: the ground truth the harness measures against.
+#
+# Each case needs:
+#   id                  unique, stable
+#   question            what gets sent to the pipeline
+#   expected_answer     what a correct answer contains (the judge compares to this)
+#   relevant_doc_ids    which document(s) SHOULD be retrieved
+#   tags                optional, for filtering/grouping results
+#
+# relevant_doc_ids works at two levels:
+#   "hr_policy.txt"         file level  — any chunk from that file counts
+#   "hr_policy.txt::c3"     chunk level — only that exact chunk counts
+#
+# File level is used here so results stay comparable across chunk sizes:
+# a fact sitting in ::c0 at chunk_size 800 may sit in ::c1 at 400, and
+# chunk-level matching would wrongly score that as a miss.
+
+- id: hr-001
+  question: How many days of paid leave do employees get per year?
+  expected_answer: Employees are entitled to 24 days of paid leave per calendar year.
+  relevant_doc_ids: ["hr_policy.txt"]
+  tags: [hr, leave]
+
+- id: hr-002
+  question: How far in advance must I request leave?
+  expected_answer: Leave requests must be submitted at least 7 days in advance through the HR portal.
+  relevant_doc_ids: ["hr_policy.txt"]
+  tags: [hr, leave]
+
+- id: hr-003
+  question: How much unused leave can be carried into the next year?
+  expected_answer: Up to a maximum of 10 days of unused leave may be carried forward.
+  relevant_doc_ids: ["hr_policy.txt"]
+  tags: [hr, leave]
+
+- id: it-001
+  question: How often are laptops refreshed?
+  expected_answer: Laptops are refreshed every 3 years.
+  relevant_doc_ids: ["it_support.txt"]
+  tags: [it, hardware]
+
+- id: it-002
+  question: How do I reset my password and how often does it expire?
+  expected_answer: Passwords can be self-reset at reset.internal.com and expire every 90 days.
+  relevant_doc_ids: ["it_support.txt"]
+  tags: [it, access]
+
+- id: it-003
+  question: What is the response time for a P1 incident?
+  expected_answer: The standard response time for a P1 incident is 2 hours.
+  relevant_doc_ids: ["it_support.txt"]
+  tags: [it, support]
+
+- id: ben-001
+  question: What does the health insurance cover?
+  expected_answer: It covers the employee, spouse, and up to two children with a sum insured of 5 lakh.
+  relevant_doc_ids: ["benefits.txt"]
+  tags: [benefits, insurance]
+
+- id: ben-002
+  question: When do I become eligible for the performance bonus?
+  expected_answer: After completing 6 months of service.
+  relevant_doc_ids: ["benefits.txt"]
+  tags: [benefits, bonus]
+
+- id: ben-003
+  question: How much is the referral bonus and when is it paid?
+  expected_answer: The referral bonus is 25000 rupees, paid after the referred candidate completes 90 days.
+  relevant_doc_ids: ["benefits.txt"]
+  tags: [benefits, referral]

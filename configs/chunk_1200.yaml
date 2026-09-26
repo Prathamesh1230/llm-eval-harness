@@ -1,0 +1,7 @@
+# Larger chunks: more context per hit, coarser retrieval.
+name: chunk_1200
+chunk_size: 1200
+chunk_overlap: 150
+top_k: 5
+gen_model: gemini-3.1-flash-lite
+judge_model: openai/gpt-oss-120b

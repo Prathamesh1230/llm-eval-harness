@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Eval Harness</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="#/" class="brand"><span class="brand-dot"></span>LLM Eval Harness</a>
+    <div class="nav-links">
+      <a href="#/" data-nav="home">Home</a>
+      <a href="#/new" data-nav="new">New evaluation</a>
+      <a href="#/history" data-nav="history">History</a>
+      <a href="/docs" target="_blank">API</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div id="banner"></div>
+
+  <!-- ============================================================ HOME -->
+  <section id="view-home" class="view">
+    <div class="hero">
+      <p class="eyebrow">Regression testing for RAG</p>
+      <h1>Know whether your RAG pipeline got better or worse.</h1>
+      <p class="lead">
+        Upload your documents, write a few questions you know the answers to,
+        and compare retrieval settings side by side. Every answer is graded by
+        an independent model, so the scores aren't marking their own homework.
+      </p>
+      <div class="btn-row">
+        <a href="#/new" class="btn">Start an evaluation</a>
+        <a href="#/history" class="btn btn-ghost">See past runs</a>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature">
+        <h3>Retrieval metrics</h3>
+        <p>Hit rate, MRR, and precision@k computed directly from your ground
+           truth. No model involved, so the numbers are reproducible.</p>
+      </div>
+      <div class="feature">
+        <h3>Independent judge</h3>
+        <p>Answers come from Gemini and are graded by Groq on anchored rubrics
+           at temperature zero, so no model scores its own output.</p>
+      </div>
+      <div class="feature">
+        <h3>Config comparison</h3>
+        <p>Run several chunking strategies against the same questions and see
+           which one actually retrieves better for your content.</p>
+      </div>
+      <div class="feature">
+        <h3>Your data stays yours</h3>
+        <p>Each session gets an isolated workspace that is deleted
+           automatically. You can also supply your own API keys.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= NEW -->
+  <section id="view-new" class="view hidden">
+    <div class="steps">
+      <div class="step on" data-step="1"><span class="step-n">1</span>Documents</div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2"><span class="step-n">2</span>Questions</div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3"><span class="step-n">3</span>Settings</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Documents</h2>
+        <span id="limit-note" class="small dim"></span>
+      </div>
+      <div class="drop" id="drop">
+        <div class="drop-title">Drop files here, or click to choose</div>
+        <div class="small dim" id="drop-hint">PDF, TXT, or MD</div>
+      </div>
+      <input type="file" id="file-input" multiple accept=".pdf,.txt,.md" class="hidden">
+      <div class="file-list" id="file-list"></div>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn btn-ghost btn-sm" id="btn-sample">Use sample documents</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Test questions</h2>
+        <button class="btn btn-ghost btn-sm" id="btn-add-q">Add question</button>
+      </div>
+      <p class="small muted" style="margin-bottom:14px">
+        Write questions you already know the answer to. The expected answer is
+        what the judge compares against; the document is what retrieval is
+        scored against.
+      </p>
+      <div class="q-list" id="q-list"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Configurations to compare</h2></div>
+      <div class="cfg-grid" id="cfg-grid"></div>
+
+      <div style="margin-top:20px">
+        <label class="check">
+          <input type="checkbox" id="use-judge" checked>
+          Grade answers with the LLM judge (slower, but scores answer quality)
+        </label>
+      </div>
+
+      <details style="margin-top:18px">
+        <summary class="small muted" style="cursor:pointer">Use my own API keys</summary>
+        <p class="small dim" style="margin:10px 0 12px">
+          Keys are used for this run only. They are never stored or logged.
+          Using your own keys doesn't count against the free run limit.
+        </p>
+        <div class="field-row">
+          <div class="field">
+            <label for="key-gemini">Gemini API key</label>
+            <input type="password" id="key-gemini" placeholder="AIza...">
+          </div>
+          <div class="field">
+            <label for="key-groq">Groq API key</label>
+            <input type="password" id="key-groq" placeholder="gsk_...">
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="btn-run">Run evaluation</button>
+      <span id="run-note" class="small dim"></span>
+    </div>
+  </section>
+
+  <!-- ============================================================= RUN -->
+  <section id="view-run" class="view hidden">
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="spinner" id="run-spin"></span> <span id="run-title">Running evaluation</span></h2>
+        <span class="pill mono" id="run-pct">0%</span>
+      </div>
+      <div class="bar"><div class="bar-fill" id="run-bar"></div></div>
+      <div class="progress-meta">
+        <span id="run-msg">Starting</span>
+        <span id="run-eta"></span>
+      </div>
+      <div class="progress-q hidden" id="run-q"></div>
+      <div class="btn-row" style="margin-top:20px">
+        <button class="btn btn-ghost btn-sm" id="btn-cancel">Back</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= RESULTS -->
+  <section id="view-results" class="view hidden">
+    <div class="card-head" style="margin-bottom:18px">
+      <h2>Results</h2>
+      <a href="#/new" class="btn btn-ghost btn-sm">New evaluation</a>
+    </div>
+    <div id="results-body"></div>
+  </section>
+
+  <!-- ========================================================= HISTORY -->
+  <section id="view-history" class="view hidden">
+    <div class="kpi-grid" id="hist-kpis"></div>
+
+    <div class="tabs">
+      <button class="tab on" data-htab="trend">Trend</button>
+      <button class="tab" data-htab="runs">Runs</button>
+      <button class="tab" data-htab="compare">Compare</button>
+      <button class="tab" data-htab="detail">Drill-down</button>
+    </div>
+
+    <div id="htab-trend" class="card">
+      <div class="card-head"><h2>Metric trend</h2></div>
+      <div class="chart-box"><canvas id="trend-chart"></canvas></div>
+    </div>
+
+    <div id="htab-runs" class="card hidden">
+      <div class="card-head"><h2>All runs</h2></div>
+      <div class="table-scroll">
+        <table id="runs-table">
+          <thead><tr>
+            <th>Run</th><th>Config</th><th>Hit</th><th>MRR</th>
+            <th>P@k</th><th>Faith</th><th>Pass</th><th>p50</th><th>Started</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="htab-compare" class="card hidden">
+      <div class="card-head"><h2>Compare two runs</h2></div>
+      <div class="field-row">
+        <div class="field"><label for="cmp-a">Baseline</label><select id="cmp-a"></select></div>
+        <div class="field"><label for="cmp-b">Current</label><select id="cmp-b"></select></div>
+      </div>
+      <button class="btn btn-sm" id="btn-compare">Compare</button>
+      <div id="cmp-out" style="margin-top:18px"></div>
+    </div>
+
+    <div id="htab-detail" class="card hidden">
+      <div class="card-head"><h2>Per-question results</h2></div>
+      <div class="field-row">
+        <div class="field"><label for="det-run">Run</label><select id="det-run"></select></div>
+        <div class="field" style="display:flex;align-items:flex-end">
+          <label class="check"><input type="checkbox" id="det-fails"> Failures only</label>
+        </div>
+      </div>
+      <div class="cases" id="det-out"></div>
+    </div>
+  </section>
+
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

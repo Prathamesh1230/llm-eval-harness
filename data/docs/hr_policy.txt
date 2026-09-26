@@ -1,0 +1,5 @@
+﻿Employees are entitled to 24 days of paid leave per calendar year.
+Leave requests must be submitted at least 7 days in advance through the HR portal.
+Unused leave may be carried forward up to a maximum of 10 days into the next year.
+Sick leave is separate and capped at 12 days annually, requiring a medical certificate beyond 2 consecutive days.
+Maternity leave is 26 weeks and paternity leave is 15 days, both fully paid.

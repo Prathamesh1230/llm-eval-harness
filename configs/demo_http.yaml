@@ -1,0 +1,9 @@
+# Evaluates a chatbot over HTTP instead of the built-in pipeline.
+# Swap the url for any company's chatbot API.
+name: demo_http
+top_k: 5
+judge_model: openai/gpt-oss-120b
+target:
+  type: http
+  url: http://127.0.0.1:8000/demo/chat
+  allow_private: true     # only because this URL is localhost

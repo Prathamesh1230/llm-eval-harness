@@ -1,0 +1,9 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+.chroma/
+*.db
+*.db-*
+workspaces/
+test_workspace.py

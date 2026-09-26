@@ -1,0 +1,7 @@
+# Baseline configuration. All experiments are measured against this.
+name: baseline
+chunk_size: 800
+chunk_overlap: 100
+top_k: 5
+gen_model: gemini-3.1-flash-lite
+judge_model: openai/gpt-oss-120b

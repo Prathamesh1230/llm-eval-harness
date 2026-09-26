@@ -1,0 +1,13 @@
+pydantic>=2.0
+pyyaml
+typer
+chromadb
+google-generativeai
+groq
+python-dotenv
+langchain-text-splitters
+pypdf
+pandas
+numpy
+streamlit
+pytest

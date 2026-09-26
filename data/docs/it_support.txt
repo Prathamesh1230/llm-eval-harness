@@ -1,0 +1,5 @@
+﻿Laptops are refreshed every 3 years. Raise a ticket on the IT helpdesk for hardware issues.
+VPN access requires multi-factor authentication set up through the company authenticator app.
+Password resets can be self-served at reset.internal.com and passwords expire every 90 days.
+Software installation requires manager approval for any tool not on the pre-approved list.
+Standard response time for a P1 incident is 2 hours and P3 is 3 business days.

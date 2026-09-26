@@ -1,0 +1,7 @@
+# Smaller chunks: more precise retrieval, less surrounding context.
+name: chunk_400
+chunk_size: 400
+chunk_overlap: 50
+top_k: 5
+gen_model: gemini-3.1-flash-lite
+judge_model: openai/gpt-oss-120b
